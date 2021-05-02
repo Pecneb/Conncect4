@@ -126,6 +126,9 @@ bool GameOver(GameState& g) {
 	return false;
 }
 
+// Still gotta implement saving the game to a text file!
+void SaveGameToText(GameState& g) {}
+
 int main(int argc, char** argv) {
 	cout << "Connect4 game\n";
 	GameState game;
