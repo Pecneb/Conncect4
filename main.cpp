@@ -12,7 +12,14 @@ struct GameState {
 };
 
 void PrintGame(GameState& g) {
-	for(int row=0; row < g.rowCount; row++) {	
+	cout << "  ";
+	for(int i=0; i<g.columnCount; i++) {
+		cout << char('A'+i);
+	}
+	cout << endl;
+	for(int row=0; row < g.rowCount; row++) {
+		if(row<9) cout << "0" << (row+1);
+		else cout << (row+1);	
 		for(int col=0; col < g.columnCount; col++) {
 			switch(g.Field[row][col]) {
 				case Player1:
@@ -29,14 +36,31 @@ void PrintGame(GameState& g) {
 	} 
 }
 
-void InitGame(GameState& g, int rowCount, int columnCount) {
+void InitGame(GameState& g) {
 	cout << "Initializing game...\n";
 	g.Field = NULL;	
 	g.Nextstep = Player1;
-	g.Field = new fieldState*[rowCount];
-	for(int row=0; row < rowCount; row++) {
-		g.Field[row] = new fieldState[columnCount];
-		for(int col=0; col < columnCount; col++) {
+	bool goodinit = true;
+	do {
+		cout << "Rows: "; cin >> g.rowCount; cout << endl;
+		cout << "Columns: "; cin >> g.columnCount; cout << endl;
+		if(g.rowCount < 6 || g.rowCount > 20) { 
+			cout << "A soroknak 6 es 20 koze kell esniuk" << endl;
+			goodinit = false;
+		} else {
+			goodinit = true;
+		}
+		if(g.columnCount < 6 || g.columnCount > 20) {
+			cout << "Az oszlopoknak 6 es 20 koze kell esniuk" << endl;
+			goodinit = false;
+		} else {
+			goodinit = true;
+		}
+	} while(!goodinit);
+	g.Field = new fieldState*[g.rowCount];
+	for(int row=0; row < g.rowCount; row++) {
+		g.Field[row] = new fieldState[g.columnCount];
+		for(int col=0; col < g.columnCount; col++) {
 			g.Field[row][col] = empty;
 		}
 	}
@@ -70,6 +94,7 @@ void MakeStep(GameState& g, char col) {
 
 bool Win(GameState& g) {
 	int stepcount;
+	int emptycount;
 	fieldState state = Player1;
 	for(int col=0; col<g.columnCount; col++) {
 		stepcount = 0;
@@ -86,13 +111,26 @@ bool Win(GameState& g) {
 	return false;
 }
 
+bool GameOver(GameState& g) {
+	int emptycount = 0;
+	for(int row=0; row<g.rowCount; row++) {
+		for(int col=0; col<g.columnCount; col++) {
+			if(g.Field[row][col] = empty) {
+				emptycount++;
+			}
+		}
+	}
+	if(emptycount == 0) {
+		return true;
+	}	
+	return false;
+}
+
 int main(int argc, char** argv) {
 	cout << "Connect4 game\n";
 	GameState game;
-       	game.rowCount = 6;
-	game.columnCount = 7;
+	InitGame(game);
 	cout << game.rowCount << " X " << game.columnCount << endl;
-	InitGame(game, game.rowCount, game.columnCount);
 	PrintGame(game);
 	char col;
 	while(!Win(game)) {
