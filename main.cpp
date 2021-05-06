@@ -3,7 +3,7 @@
 
 using namespace std;
 
-enum fieldState {Player1 , Player2, empty};
+enum fieldState {empty, Player1 , Player2};
 
 struct GameState {
 	int rowCount, columnCount;
@@ -115,7 +115,7 @@ bool GameOver(GameState& g) {
 	int emptycount = 0;
 	for(int row=0; row<g.rowCount; row++) {
 		for(int col=0; col<g.columnCount; col++) {
-			if(g.Field[row][col] = empty) {
+			if(g.Field[row][col] == empty) {
 				emptycount++;
 			}
 		}
@@ -127,12 +127,39 @@ bool GameOver(GameState& g) {
 }
 
 // Still gotta implement saving the game to a text file!
-void SaveGameToText(GameState& g) {}
+void GameToText(GameState& g) {
+	ofstream f("connect4.txt");
+	if(f.is_open()) {
+		f << g.rowCount << '\n';
+		f << g.columnCount << '\n';
+		for(int row=0; row<g.rowCount; row++) {
+			for(int col=0; col<g.columnCount; col++) {
+				f << g.Field[row][col];
+			}
+			f << '\n';
+		}
+	}
+	f.close();
+}
+
+// This gotta be done by tomorrow, fuck this.
+void TextToGame(GameState& g) {
+	ifstream f("connect4.txt");
+	char c;
+	if(f.is_open()) {
+		while(f.get(c)) cout << c;
+	}
+	f.close();
+}
 
 int main(int argc, char** argv) {
-	cout << "Connect4 game\n";
 	GameState game;
-	InitGame(game);
+	if(argv[1] == "betolt") {
+		GameToText(game);
+	} else {
+		InitGame(game);
+	}
+	cout << "Connect4 game\n";
 	cout << game.rowCount << " X " << game.columnCount << endl;
 	PrintGame(game);
 	char col;
@@ -148,6 +175,7 @@ int main(int argc, char** argv) {
 	if(game.Nextstep==Player1) cout << "Player2";
 	else cout << "Player1";
 	cout << " has won the game\n";
+	GameToText(game);
 	Destructor(game);	
 	return 0;
 }
